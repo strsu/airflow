@@ -1,0 +1,62 @@
+version: '2'
+
+services:
+  postgresql:
+    image: docker.io/bitnami/postgresql:10
+    volumes:
+      - 'postgresql_data:/bitnami/postgresql'
+    env_file:
+      - 'postgres_common.env'
+
+  redis:
+    image: docker.io/bitnami/redis:7.0
+    volumes:
+      - 'redis_data:/bitnami'
+    env_file:
+      - 'redis_common.env'
+
+  airflow-scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile_scheduler
+    env_file:
+      - 'redis_common.env'
+      - 'airflow_common.env'
+    volumes:
+      - ../dags:/opt/bitnami/airflow/dags
+      #- ../logs:/opt/bitnami/airflow/logs
+
+  airflow-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile_worker
+    env_file:
+      - 'redis_common.env'
+      - 'airflow_common.env'
+    volumes:
+      - ../dags:/opt/bitnami/airflow/dags
+      #- ../logs:/opt/bitnami/airflow/logs
+
+  airflow:
+    build:
+      context: .
+      dockerfile: Dockerfile_webserver
+    env_file:
+      - 'redis_common.env'
+      - 'airflow_common.env'
+    ports:
+      - '8080:8080'
+    volumes:
+      - ../dags:/opt/bitnami/airflow/dags
+      #- ../logs:/opt/bitnami/airflow/logs
+volumes:
+  postgresql_data:
+    driver: local
+  redis_data:
+    driver: local
+
+#docker-compose up --build
+#docker-compose down --volumes --remove-orphans
+
+## delete
+# sudo docker system prune -a
