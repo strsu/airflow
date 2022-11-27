@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+rm *.pid
+
 airflow db init
 
 airflow users create \
