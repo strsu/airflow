@@ -43,7 +43,7 @@ def get_subway(**kwargs):
     producer = KafkaProducer(
         acks=1,
         compression_type="gzip",
-        bootstrap_servers=["192.168.209.1:9092"],
+        bootstrap_servers=["192.168.1.243:9092"],
         value_serializer=lambda x: json.dumps(x).encode("utf-8"),
     )
 
