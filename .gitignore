@@ -13,4 +13,4 @@ __pycache__/
 *.pid
 *.db
 
-airflow-logs
+logs/
