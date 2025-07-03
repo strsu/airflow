@@ -3,3 +3,5 @@ numpy
 pandas
 openpyxl
 psycopg2-binary
+selenium==4.34.0
+fake-useragent==2.2.0

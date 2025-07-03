@@ -1,0 +1,29 @@
+FROM apache/airflow:3.0.2
+
+USER root
+RUN apt-get update && apt-get install -y wget curl unzip gnupg
+
+ENV CHROME_VERSION=138.0.7204.92
+
+# 특정 Chrome 버전 설치 (138.0.7204.92)
+RUN wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add - && \
+    echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list && \
+    apt-get update && \
+    apt-get install -y google-chrome-stable=${CHROME_VERSION}-1
+
+# ChromeDriver 설치 (Chrome 138에 맞는 버전)
+RUN wget -q "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/${CHROME_VERSION}/linux64/chromedriver-linux64.zip" -O /tmp/chromedriver.zip && \
+    unzip /tmp/chromedriver.zip -d /tmp/ && \
+    mv /tmp/chromedriver-linux64/chromedriver /usr/local/bin/ && \
+    chmod +x /usr/local/bin/chromedriver && \
+    rm -rf /tmp/chromedriver*
+
+# Chrome 버전 확인
+RUN google-chrome --version && chromedriver --version
+
+USER airflow
+
+# 추가 패키지 설치
+COPY requirements.txt /requirements.txt
+RUN pip install --no-cache-dir -r /requirements.txt
+
